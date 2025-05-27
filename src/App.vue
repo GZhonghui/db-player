@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { NTree, NButton, NTabs, NTab, NCard, NTabPane } from 'naive-ui'
+import { NTree, NButton, NTabs, NTab, NCard, NTabPane, NList, NListItem } from 'naive-ui'
 
 const libraryData = {
   a: {
@@ -71,12 +71,28 @@ function showSelectedFiles() {
     alert(`你选中的文件路径为：\n\n${selectedFiles.join('\n')}`)
   }
 }
+
+const songs = ref([
+  { artist: '万能青年旅店', title: '杀死那个石家庄人' },
+  { artist: '朴树', title: '平凡之路' },
+  { artist: '李志', title: '梵高先生' }
+])
+
+const play = (song) => {
+  console.log('播放歌曲:', song)
+}
 </script>
 
 <template>
+  <div id="player">
+    <p>播放状态</p>
+  </div>
   <div id="library">
     <n-tabs type="line" animated>
       <n-tab-pane name="tab-library" tab="音乐">
+        <n-button type="primary" style="margin-bottom: 8px;" @click="showSelectedFiles">
+          添加至播放列表
+        </n-button>
         <n-tree
           :data="treeData"
           :default-expand-all="false"
@@ -88,22 +104,60 @@ function showSelectedFiles() {
         />
       </n-tab-pane>
       <n-tab-pane name="tab-playlist" tab="列表">
-        Hey Jude
+        <n-button>清空</n-button>
+        <n-list hoverable clickable>
+          <n-list-item v-for="(song, index) in songs" :key="index">
+            <div class="song-item">
+              <span class="song-text">{{ song.artist }} - {{ song.title }}</span>
+              <n-button
+                type="primary"
+                class="play-button"
+                @click="play(song)"
+                quaternary
+              >
+                播放
+              </n-button>
+              <n-button type="primary" class="play-button">删除</n-button>
+            </div>
+          </n-list-item>
+        </n-list>
       </n-tab-pane>
     </n-tabs>
-    <div style="margin-top: 16px;">
-      <n-button type="primary" @click="showSelectedFiles">
-        显示选中的完整路径
-      </n-button>
-    </div>
   </div>
 </template>
 
 <style scoped>
-#library {
+#player, #library {
   margin: 16px;
   padding: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+
+.song-item {
+  position: relative;
+  padding: 8px 0;
+}
+
+.song-text {
+  display: inline-block;
+}
+
+.play-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 1;
+}
+
+/* 当鼠标悬浮到 .song-item 上时，显示按钮 */
+.song-item:hover .play-button {
+  opacity: 1;
+}
+
+.song-item:hover .song-text {
+  opacity: 0.3;
 }
 </style>
